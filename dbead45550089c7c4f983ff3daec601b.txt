@@ -1,0 +1,137 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct List //Создаем структуру лист
+{
+	int data; // В листе два значения, переменная и указатель на следующий элемент
+	struct List* Next;
+};
+
+struct List* init(int number)  // Сделаем лист с одним элементом
+{
+	struct List* First;
+	First = (struct List*)malloc(sizeof(struct List)); // Создание листа
+	if (First == NULL)
+		return; // Ошибка что NULL, ну такая проверка
+
+	First->data = number; // Присвоим 0 элементу значение из number
+	First->Next = NULL; // Присвоим указатель на следующий элемент как NULL
+
+	return First; // Вернём список обратно
+}
+
+void addToList(struct List* First, int number) //Функция добавления интового значения в лист
+{
+	struct List* new_node = (struct List*)malloc(sizeof(struct List)); // Создаем лист
+	if (new_node == NULL)
+		return; // Ошибка что NULL, ну такая проверка
+
+	new_node->data = number; // Заносим внутрь 0 элемента значение number
+	new_node->Next = NULL; // Указатель ставим на NULL
+
+	if (First == NULL) // Проверяем если элемент является последним то выходим из списка
+	{
+		First = new_node;
+		return;
+	}
+
+	struct List* current = First; // Двигаем ключевой элемент (первый)
+	while (current->Next != NULL) // Если элемент не является NULL то будем пробегаться по элементам списка
+	{
+		current = current->Next;
+	}
+	current->Next = new_node; // Даём ему следующий указатель
+}
+
+
+
+
+
+
+
+
+int main()
+{
+	int i = 0, num;
+	int index = 1, flag = 0;
+	struct List* head = NULL;
+	while (scanf("%d", &num)) // Вводим значения для листа пока не введена буква или символ
+	{
+		if (i == 0) // В первом пробеге нужно занести элемент через функцию init, дальше проходить по следующей функции
+		{
+			head = init(num);
+		}
+		else
+			addToList(head, num);
+
+		i++;
+	}
+
+	if (head == NULL) // Проверка на пустоту листа
+	{
+		printf("NULL");
+		return 0;
+	}
+	struct List* twohead = NULL;
+	struct List* PU = head;
+	struct List* U = NULL;
+
+	struct List* current = NULL;
+
+	while (PU->Next != NULL)
+	{
+		U = PU->Next;
+		if (U->data > index)
+		{
+
+			PU->Next = U->Next;
+			U->Next = NULL;
+
+			// Сохранить голову
+			if (twohead == NULL) // Создали
+				twohead = U;
+			else
+			{
+				current = twohead;
+				while (current->Next)
+					current = current->Next;
+
+				current->Next = U;
+			}
+		}
+		else
+		{
+			PU = U;
+		}
+		index++;
+	}
+	if (head->data > 1)
+	{
+		struct List* tmp = head;
+		head = head->Next;
+
+		tmp->Next = twohead;
+		twohead = tmp;
+	}
+
+	while (head) // Пробегаемся по списку и выводим значения списка с переходом на следующий указатель 
+	{
+		printf("%d ", head->data);
+		head = head->Next;
+	}
+	printf("\n");
+	while (twohead) // Пробегаемся по списку и выводим значения списка с переходом на следующий указатель 
+	{
+		printf("%d ", twohead->data);
+		twohead = twohead->Next;
+	}
+
+
+	while (head) // Очищаем список
+	{
+		struct List* temp = head->Next;
+		free(head);
+		head = temp;
+	}
+	return 0;
+}
